@@ -19,15 +19,13 @@ public class PassengerThread extends Thread {
     @Override
     public void run() {
         while(true) {
-
             pass.begin();
-
             if(fromFloor == monitor.getCurrentFloor()) {
-                monitor.enterIfAllowed();
+                monitor.enterIfAllowed(pass);
             }
 
             if(toFloor == monitor.getCurrentFloor()) {
-
+                monitor.leaveIfAllowed(pass);
             }
         }
     }

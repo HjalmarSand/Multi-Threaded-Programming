@@ -11,7 +11,7 @@ public class OnePersonRidesLift {
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
 
-        LiftMonitor monitor = new LiftMonitor(NBR_FLOORS, MAX_PASSENGERS);
+        LiftMonitor monitor = new LiftMonitor(NBR_FLOORS, MAX_PASSENGERS, view);
 
 
         Passenger pass = view.createPassenger();
