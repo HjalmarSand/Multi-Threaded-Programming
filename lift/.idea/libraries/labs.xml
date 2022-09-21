@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="labs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../edap10-labs/cs/labs.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

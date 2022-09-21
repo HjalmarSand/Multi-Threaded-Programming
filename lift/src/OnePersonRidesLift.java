@@ -7,10 +7,13 @@ import lift.PassengerThread;
 public class OnePersonRidesLift {
 
     public static void main(String[] args) {
-        LiftMonitor monitor = new LiftMonitor();
         final int NBR_FLOORS = 7, MAX_PASSENGERS = 4;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
+
+        LiftMonitor monitor = new LiftMonitor(NBR_FLOORS, MAX_PASSENGERS);
+
+
         Passenger pass = view.createPassenger();
         int  fromFloor = pass.getStartFloor();
         int    toFloor = pass.getDestinationFloor();
