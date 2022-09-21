@@ -14,14 +14,6 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library" exported="">
-      <library name="labs.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../cs/labs.jar!/"  />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="labs" level="project" />
   </component>
 </module>

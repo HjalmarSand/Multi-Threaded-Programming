@@ -31,7 +31,6 @@ public class TrainThread extends Thread {
 
     private synchronized void runTrain() {
         Segment head = route.next();
-
         monitor.addToSet(head);
         head.enter();
         queue.addFirst(head);

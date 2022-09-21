@@ -5,7 +5,7 @@ import train.view.TrainView;
 public class TrainSimulation {
 
     public static void main(String[] args) {
-        TrainView view = new TrainView();
+
         TrainDataMointor monitor = new TrainDataMointor();
 
         for(int i = 0; i < 20; i++) {

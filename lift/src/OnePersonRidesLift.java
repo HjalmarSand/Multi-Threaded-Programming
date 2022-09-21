@@ -1,11 +1,13 @@
 
+import lift.LiftMonitor;
 import lift.LiftView;
 import lift.Passenger;
+import lift.PassengerThread;
 
 public class OnePersonRidesLift {
 
     public static void main(String[] args) {
-
+        LiftMonitor monitor = new LiftMonitor();
         final int NBR_FLOORS = 7, MAX_PASSENGERS = 4;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
@@ -26,5 +28,9 @@ public class OnePersonRidesLift {
 
         pass.exitLift();                     // leave lift
         pass.end();                          // walk out (to the right)
+
+        for(int i = 0; i < 20; i++) {
+            new PassengerThread(monitor, view.createPassenger());
+        }
     }
 }

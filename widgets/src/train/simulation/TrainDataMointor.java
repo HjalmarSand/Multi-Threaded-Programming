@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TrainDataMointor {
-    private volatile static Set<Segment> currTrainSegs = new HashSet<>();
+    private  Set<Segment> currTrainSegs = new HashSet<>();
     static TrainView view = new TrainView();
 
 
-    public void addToSet(Segment segment) {
+    public synchronized void addToSet(Segment segment) {
        try {
          while (currTrainSegs.contains(segment)) {
              wait();
@@ -25,8 +25,8 @@ public class TrainDataMointor {
         return view;
     }
 
-    public void removeFromSet(Segment seg) {
+    public synchronized void removeFromSet(Segment seg) {
         currTrainSegs.remove(seg);
-        notifyAll();
+        //notifyAll();
     }
 }
