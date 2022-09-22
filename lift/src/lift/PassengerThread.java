@@ -14,17 +14,23 @@ public class PassengerThread extends Thread {
 
         this.fromFloor = pass.getStartFloor();
         this.toFloor = pass.getDestinationFloor();
-        monitor.incrementToEnter(fromFloor);
+
         System.out.println("LOOOL");
     }
 
     @Override
     public void run() {
-        pass.begin();
-        monitor.enterIfAllowed(pass);
+            pass.begin();
+            monitor.incrementToEnter(fromFloor);
 
-        monitor.leaveIfAllowed(pass);
-        pass.end();
+            monitor.prepareToEnter(pass);
+            pass.enterLift();
+            monitor.decreaseEnteringPassengers();
+
+            monitor.prepareToLeave(pass);
+            pass.exitLift();
+            monitor.decreaseExitingPassengers();
+
+            pass.end();
     }
-
 }
