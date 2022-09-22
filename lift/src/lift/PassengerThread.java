@@ -8,26 +8,23 @@ public class PassengerThread extends Thread {
 
 
     public PassengerThread(LiftMonitor monitor, Passenger pass) {
+        System.out.println("Hey hey!!");
         this.monitor = monitor;
         this.pass = pass;
 
         this.fromFloor = pass.getStartFloor();
         this.toFloor = pass.getDestinationFloor();
-        monitor.getToEnterArray()[fromFloor]++;
+        monitor.incrementToEnter(fromFloor);
+        System.out.println("LOOOL");
     }
 
     @Override
     public void run() {
-        while(true) {
-            pass.begin();
-            if(fromFloor == monitor.getCurrentFloor()) {
-                monitor.enterIfAllowed(pass);
-            }
+        pass.begin();
+        monitor.enterIfAllowed(pass);
 
-            if(toFloor == monitor.getCurrentFloor()) {
-                monitor.leaveIfAllowed(pass);
-            }
-        }
+        monitor.leaveIfAllowed(pass);
+        pass.end();
     }
 
 }

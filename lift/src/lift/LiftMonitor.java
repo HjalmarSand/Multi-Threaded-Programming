@@ -4,19 +4,25 @@ public class LiftMonitor {
     private int maxCapacity;
     private int numberOfFloors;
     private LiftView view;
-    private int currentFloor;
+    private int currentFloor = 0;
     private int[] toEnter;
     private int[] toExit;
     private int currentPassengers;
-    private boolean isMoving;
+    //private boolean isMoving = false;
     private boolean isMovingUp; //what if it is not moving
 
     public LiftMonitor(int numberOfFloors, int maxLiftCapacity, LiftView view) {
         this.maxCapacity = maxLiftCapacity;
         this.numberOfFloors = numberOfFloors;
+        toEnter = new int[numberOfFloors];
+        toExit = new int[numberOfFloors];
         this.view = view;
     }
 
+    public synchronized void incrementToEnter(int floor) {
+        System.out.println(floor);
+        toEnter[floor]++;
+    }
 
     public synchronized int getCurrentFloor() {
         return currentFloor;
@@ -24,8 +30,9 @@ public class LiftMonitor {
 
     public synchronized void enterIfAllowed(Passenger pass) {
         try {
-            while (currentPassengers == maxCapacity || isMoving) {
-                    wait();
+            while (currentPassengers == maxCapacity || pass.getStartFloor() != currentFloor) { //jag byter ut isMoving
+                //varje gång hissen byter våning notifiar den, så wait här avbryts
+                wait();
             }
             view.openDoors(pass.getStartFloor());
             pass.enterLift();
@@ -43,7 +50,7 @@ public class LiftMonitor {
 
     public synchronized void leaveIfAllowed(Passenger pass) {
         try {
-            while (isMoving || currentFloor != pass.getDestinationFloor()) {
+            while (currentFloor != pass.getDestinationFloor()) {
                 wait();
             }
             view.openDoors(pass.getDestinationFloor());
@@ -64,17 +71,20 @@ public class LiftMonitor {
                 wait();
             }
 
-            if ((currentFloor == 0 && !isMovingUp)  || (currentFloor == numberOfFloors && isMovingUp)) {
+            if ((currentFloor == 0 && !isMovingUp)  || (currentFloor == numberOfFloors - 1  && isMovingUp)) {
                 isMovingUp = !isMovingUp;
             }
 
             if (isMovingUp) {
                 view.moveLift(currentFloor, currentFloor + 1);
+                currentFloor++;
             } else {
                 view.moveLift(currentFloor, currentFloor - 1);
+                currentFloor--;
             }
-                notifyAll();
-
+            System.out.println(toEnter[0] + " " + toEnter[1] + " " + toEnter[2] + " " + toEnter[3] +
+                    " " + toEnter[4] + " " + toEnter[5] + " " + toEnter[6]);
+            notifyAll();
         }  catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

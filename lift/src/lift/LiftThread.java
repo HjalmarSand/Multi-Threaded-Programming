@@ -9,6 +9,7 @@ public class LiftThread extends Thread {
     @Override
     public void run() {
         while (true) {
+            System.out.println("calling lift move in lift thread");
             monitor.moveLift();
         }
     }
