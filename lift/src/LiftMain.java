@@ -4,7 +4,7 @@ import lift.*;
 public class LiftMain {
 
     public static void main(String[] args) {
-        final int NBR_FLOORS = 7, MAX_PASSENGERS = 4;
+        final int NBR_FLOORS = 15, MAX_PASSENGERS = 10 ;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
 

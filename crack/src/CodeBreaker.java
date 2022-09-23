@@ -24,6 +24,7 @@ public class CodeBreaker implements SnifferCallback {
         progressList    = w.getProgressList();
         mainProgressBar = w.getProgressBar();
     }
+
     
     // -----------------------------------------------------------------------
     
@@ -39,6 +40,7 @@ public class CodeBreaker implements SnifferCallback {
         SwingUtilities.invokeLater(() -> {
             CodeBreaker codeBreaker = new CodeBreaker();
             new Sniffer(codeBreaker).start();
+
         });
     }
 
