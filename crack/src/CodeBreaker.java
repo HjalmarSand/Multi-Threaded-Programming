@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.math.BigInteger;
 
 import javax.swing.JPanel;
@@ -5,6 +6,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import client.view.StatusWindow;
+import client.view.WorklistItem;
 import network.Sniffer;
 import network.SnifferCallback;
 
@@ -14,6 +16,7 @@ public class CodeBreaker implements SnifferCallback {
     private final JPanel progressList;
     
     private final JProgressBar mainProgressBar;
+    private static final CodeBreaker codeBreaker = new CodeBreaker();
 
     // -----------------------------------------------------------------------
     
@@ -35,11 +38,7 @@ public class CodeBreaker implements SnifferCallback {
          * 
          * That's what SwingUtilities.invokeLater is for.
          */
-
-        SwingUtilities.invokeLater(() -> {
-            CodeBreaker codeBreaker = new CodeBreaker();
-            new Sniffer(codeBreaker).start();
-        });
+        new Sniffer(codeBreaker).start();
     }
 
     // -----------------------------------------------------------------------
@@ -48,5 +47,13 @@ public class CodeBreaker implements SnifferCallback {
     @Override
     public void onMessageIntercepted(String message, BigInteger n) {
         System.out.println("message intercepted (N=" + n + ")...");
+        updateWindow(message, n);
+    }
+
+    public void updateWindow(String message, BigInteger n) {
+        SwingUtilities.invokeLater(() -> {
+            codeBreaker.workList.add(new WorklistItem(n, message));
+            new Sniffer(codeBreaker).start();
+        });
     }
 }
