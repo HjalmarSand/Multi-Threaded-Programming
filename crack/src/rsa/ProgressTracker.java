@@ -18,5 +18,5 @@ public interface ProgressTracker {
      * 
      * @param ppmDelta     Progress made since last report, in ppm.
      */
-    public void onProgress(int ppmDelta);
+    public void onProgress(int ppmDelta) throws InterruptedException;
 }
