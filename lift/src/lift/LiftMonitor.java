@@ -14,7 +14,6 @@ public class LiftMonitor {
     private boolean isMovingUp = false; //what if it is not moving
     private boolean doorClosed = true;
     private int waitingPassengers;
-    public Semaphore animationSemaphore = new Semaphore(1);
     private int enteringPassengers;
     private int exitingPassengers;
 
@@ -38,13 +37,12 @@ public class LiftMonitor {
 
 
 
-    public synchronized LiftView getLiftView() {
+    public LiftView getLiftView() {
         return view;
     }
 
 
     public synchronized int getToFloor () {
-
         if ((currentFloor == 0 && !isMovingUp)  || (currentFloor == numberOfFloors - 1  && isMovingUp)) {
             isMovingUp = !isMovingUp;
         }
@@ -53,12 +51,12 @@ public class LiftMonitor {
             return currentFloor + 1;
         } else {
             System.out.println(currentFloor -1);
-
             return currentFloor - 1;
-        }    }
+        }
+    }
 
     public synchronized void incrementToEnter(int floor) {
-        System.out.println(floor);
+
         toEnter[floor]++;
         waitingPassengers++;
         notifyAll();
@@ -70,7 +68,6 @@ public class LiftMonitor {
 
     public synchronized void prepareToEnter(Passenger pass) {
         try {
-
             //System.out.println("Is moving: " + isMoving);
             while (currentPassengers == maxCapacity || pass.getStartFloor() != currentFloor || isMoving) {
                 //varje gång hissen byter våning notifiar den, så wait här avbryts
@@ -78,8 +75,6 @@ public class LiftMonitor {
                 //System.out.println("Current floor elevator: " + currentFloor + " Passenger floor: " + pass.getStartFloor());
                 wait();
             }
-            System.out.println("Enter lift is moving");
-            //pass.enterLift();
             enteringPassengers++;
             currentPassengers++;
             waitingPassengers--;
@@ -110,13 +105,11 @@ public class LiftMonitor {
 
     public synchronized void moveLift(int currentFloor, int toFloor) {
         try {
-
             while ((toEnter[currentFloor] != 0 && currentPassengers < 4)
                     || toExit[currentFloor] != 0
                     || waitingPassengers + currentPassengers == 0
                     || exitingPassengers + enteringPassengers > 0) {
 
-                System.out.println("enters move lift wait");
 
                 if(doorClosed) {
                     view.openDoors(currentFloor);
@@ -124,10 +117,10 @@ public class LiftMonitor {
                 }
 
                 isMoving = false;
-                System.out.println("Lift is falling asleep");
                 notifyAll();
                 wait();
             }
+
             isMoving = true;
             if(!doorClosed) {
                 view.closeDoors();
@@ -136,8 +129,6 @@ public class LiftMonitor {
 
             this.currentFloor = toFloor;
 
-            System.out.println(toEnter[0] + " " + toEnter[1] + " " + toEnter[2] + " " + toEnter[3] +
-                    " " + toEnter[4] + " " + toEnter[5] + " " + toEnter[6]);
 
             notifyAll();
         }  catch (InterruptedException e) {

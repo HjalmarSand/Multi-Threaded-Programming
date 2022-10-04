@@ -1,10 +1,10 @@
 
 import lift.*;
 
-public class OnePersonRidesLift {
+public class LiftMain {
 
     public static void main(String[] args) {
-        final int NBR_FLOORS = 10, MAX_PASSENGERS = 5;
+        final int NBR_FLOORS = 15, MAX_PASSENGERS = 10 ;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
 
