@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class ActorThread<M> extends Thread {
-
     BlockingQueue<M> ourQueue = new LinkedBlockingQueue();
 
     /** Called by another thread, to send a message to this thread. */
