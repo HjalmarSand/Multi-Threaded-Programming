@@ -22,7 +22,7 @@ public class CodeBreaker implements SnifferCallback {
     private final JPanel progressList;
     
     private final JProgressBar mainProgressBar;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
     public static int progressTracker = 0;
     private Semaphore sema = new Semaphore(1);
 
@@ -54,21 +54,7 @@ public class CodeBreaker implements SnifferCallback {
         SwingUtilities.invokeLater(() -> {
             CodeBreaker codeBreaker = new CodeBreaker();
             new Sniffer(codeBreaker).start();
-
-
         });
-    }
-
-    private static class OurTracker implements ProgressTracker {
-        int currentProgress;
-        @Override
-        public void onProgress(int ppmDelta) {
-            currentProgress += ppmDelta;
-            /*if(currentProgress == 1000000) {
-                //CodeBreaker.addToProgressTracker(1000000);
-            }*/
-            System.out.println("progress = " + currentProgress + "/1000000");
-        }
     }
 
     // -----------------------------------------------------------------------
