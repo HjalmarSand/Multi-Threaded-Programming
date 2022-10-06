@@ -20,39 +20,46 @@ public class WaterController extends ActorThread<WashingMessage> {
         try {
             // ... TODO ...
 
+            boolean sent = false;
 
+            WashingMessage ourMessage = new WashingMessage(this, WashingMessage.Order.WATER_IDLE);
             while (true) {
 
                 // wait for up to a (simulated) minute for a WashingMessage
-                WashingMessage m = receiveWithTimeout(60000 / Settings.SPEEDUP);
+                WashingMessage m = receiveWithTimeout(10000 / Settings.SPEEDUP);
 
-                // if m is null, it means a minute passed and no message was received
                 if (m != null) {
-                    System.out.println("entering");
-                    if(m.getOrder() == WashingMessage.Order.WATER_IDLE) {
-                        ourIO.fill(false);
-                        ourIO.drain(false);
-                    } else if(m.getOrder() == WashingMessage.Order.WATER_FILL) {
-                        while(true) {
-                            if (ourIO.getWaterLevel() <= 10) {
-                                System.out.println("filling");
-                                ourIO.fill(true);
-                                ourIO.drain(false);
-                            } else {
-                                System.out.println("not filling");
-                                ourIO.fill(false);
-                            }
-                            Thread.sleep(10000 / Settings.SPEEDUP);
-                        }
-                    } else if(m.getOrder() == WashingMessage.Order.WATER_DRAIN) {
-                        ourIO.drain(true);
-                        ourIO.fill(false);
-                    }
-
-                    m.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                    ourMessage = m;
+                    sent = false;
                 }
+                // if m is null, it means a minute passed and no message was received
 
-                // ... TODO ...
+
+                if(ourMessage.getOrder() == WashingMessage.Order.WATER_IDLE) {
+                    ourIO.fill(false);
+                    ourIO.drain(false);
+                    if(m != null) {
+                        ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                    }
+                } else if(ourMessage.getOrder() == WashingMessage.Order.WATER_FILL) {
+                    if (ourIO.getWaterLevel() < 10) {
+                        ourIO.drain(false);
+                        ourIO.fill(true);
+                    } else {
+                        ourIO.fill(false);
+                        if(!sent) {
+                            ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                            sent = true;
+                        }
+                    }
+                } else if(ourMessage.getOrder() == WashingMessage.Order.WATER_DRAIN) {
+                    ourIO.fill(false);
+                    ourIO.drain(true);
+                    if(!sent && ourIO.getWaterLevel() == 0) {
+                        ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                        sent = true;
+                    }
+                }
             }
         } catch (InterruptedException unexpected) {
             // we don't expect this thread to be interrupted,

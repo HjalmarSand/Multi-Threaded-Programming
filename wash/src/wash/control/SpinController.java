@@ -18,6 +18,9 @@ public class SpinController extends ActorThread<WashingMessage> {
         try {
             // ... TODO ...
 
+            WashingMessage ourMessage = new WashingMessage(this, WashingMessage.Order.SPIN_OFF);
+            boolean isSpinningLeft = false;
+            boolean sent = false;
 
             while (true) {
 
@@ -26,29 +29,27 @@ public class SpinController extends ActorThread<WashingMessage> {
 
                 // if m is null, it means a minute passed and no message was received
                 if (m != null) {
-                    System.out.println("entering");
-                    if(m.getOrder() == WashingMessage.Order.SPIN_SLOW) {
-                        System.out.println(1);
-                        while(true) {
-                            ourIO.setSpinMode(WashingIO.SPIN_LEFT);
-                            System.out.println("left");
-                            Thread.sleep(60000 / Settings.SPEEDUP);
-                            ourIO.setSpinMode(WashingIO.SPIN_RIGHT);
-                            System.out.println("right");
-                            Thread.sleep(60000 / Settings.SPEEDUP);
-                        }
-                    } else if(m.getOrder() == WashingMessage.Order.SPIN_FAST) {
-                        System.out.println(2);
-                        ourIO.setSpinMode(WashingIO.SPIN_FAST);
-                    } else if(m.getOrder() == WashingMessage.Order.SPIN_OFF) {
-                        System.out.println(3);
-                        ourIO.setSpinMode(WashingIO.SPIN_IDLE);
-                    }
+                    ourMessage = m;
+                    sent = true;
+                }
 
+
+                if(ourMessage.getOrder() == WashingMessage.Order.SPIN_SLOW)  {
+                    if (isSpinningLeft) {
+                        ourIO.setSpinMode(WashingIO.SPIN_RIGHT);
+                        isSpinningLeft = false;
+                    } else {
+                        ourIO.setSpinMode(WashingIO.SPIN_LEFT);
+                        isSpinningLeft = true;
+                    }
+                }  else if(ourMessage.getOrder() == WashingMessage.Order.SPIN_FAST) {
+                    ourIO.setSpinMode(WashingIO.SPIN_FAST);
+                } else if(ourMessage.getOrder() == WashingMessage.Order.SPIN_OFF) {
+                    ourIO.setSpinMode(WashingIO.SPIN_IDLE);
+                }
+                if (m != null) {
                     m.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
                 }
-                
-                // ... TODO ...
             }
         } catch (InterruptedException unexpected) {
             // we don't expect this thread to be interrupted,

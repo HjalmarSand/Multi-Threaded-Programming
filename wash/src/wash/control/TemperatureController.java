@@ -8,7 +8,9 @@ public class TemperatureController extends ActorThread<WashingMessage> {
     // TODO: add attributes
     WashingIO ourIO;
     int dt = 10;
-    double heatPerTime = 0.0478 * dt;
+    double upperConstant = 0.0478 * dt;
+    double lowerConstant  = dt * 9.52 / 1000;
+
 
 
     public TemperatureController(WashingIO io) {
@@ -19,42 +21,50 @@ public class TemperatureController extends ActorThread<WashingMessage> {
     @Override
     public void run() {
         // TODO
+
+        boolean sent = false;
         try {
             // ... TODO ...
 
-
+            WashingMessage ourMessage = new WashingMessage(this, WashingMessage.Order.TEMP_IDLE);
             while (true) {
 
                 // wait for up to a (simulated) minute for a WashingMessage
-                WashingMessage m = receiveWithTimeout(60000 / Settings.SPEEDUP);
+                WashingMessage m = receiveWithTimeout(dt * 1000 / Settings.SPEEDUP);
 
-                // if m is null, it means a minute passed and no message was received
                 if (m != null) {
-                    System.out.println("entering");
-                    if(m.getOrder() == WashingMessage.Order.TEMP_IDLE) {
+                    ourMessage = m;
+                    sent = false;
+                }
+                // if m is null, it means a minute passed and no message was received
+                if(ourMessage.getOrder() == WashingMessage.Order.TEMP_IDLE) {
+                    ourIO.heat(false);
+                    if (m != null) {
+                        ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                    }
+                } else if(ourMessage.getOrder() == WashingMessage.Order.TEMP_SET_40) {
+                    if (ourIO.getTemperature() < 38 + lowerConstant) {
+                        ourIO.heat(true);
+                    } else if (ourIO.getTemperature() > 40 - upperConstant){
                         ourIO.heat(false);
-                    } else if(m.getOrder() == WashingMessage.Order.TEMP_SET_40) {
-                        while(true) {
-                            if (ourIO.getTemperature() < 40 - heatPerTime) {
-                                ourIO.heat(true);
-                            } else {
-                                ourIO.heat(false);
-                            }
-                            Thread.sleep(10000);
-                        }
-                    } else if(m.getOrder() == WashingMessage.Order.TEMP_SET_60) {
-                        while(true) {
-                            if (ourIO.getTemperature() < 60 - heatPerTime) {
-                                ourIO.heat(true);
-                            } else {
-                                ourIO.heat(false);
-                            }
-                            Thread.sleep(10000);
+                        if(!sent) {
+                            ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                            sent = true;
                         }
                     }
-
-                    m.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                } else if(ourMessage.getOrder() == WashingMessage.Order.TEMP_SET_60) {
+                    if (ourIO.getTemperature() < 58 + lowerConstant) {
+                        ourIO.heat(true);
+                    } else if (ourIO.getTemperature() > 60 - upperConstant){
+                        ourIO.heat(false);
+                        if(!sent) {
+                            ourMessage.getSender().send(new WashingMessage(this, WashingMessage.Order.ACKNOWLEDGMENT));
+                            sent = true;
+                        }
+                    }
                 }
+
+
 
                 // ... TODO ...
             }
