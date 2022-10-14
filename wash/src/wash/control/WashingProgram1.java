@@ -32,10 +32,10 @@ public class WashingProgram1 extends ActorThread<WashingMessage> {
             receive();
             spin.send(new WashingMessage(this, SPIN_SLOW));
             receive();
-            Thread.sleep(1800000 / Settings.SPEEDUP);
-            temp.send(new WashingMessage(this, TEMP_IDLE));
-            receive();
+            Thread.sleep(1800000/ Settings.SPEEDUP);
             spin.send(new WashingMessage(this, SPIN_OFF));
+            receive();
+            temp.send(new WashingMessage(this, TEMP_IDLE));
             receive();
             water.send(new WashingMessage(this, WATER_DRAIN));
             receive();

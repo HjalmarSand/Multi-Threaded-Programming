@@ -23,7 +23,6 @@ add_values(void *arg)
   for (int i = n; i < n + 25000; i++) {
     intset_add(s, i);
   }
-
   return NULL;
 }
 
@@ -75,12 +74,11 @@ single_threaded_test()
   printf("single-threaded test:\n");
 
   s = intset_create();
-	
+	printf("created intset");
   add_values(&start1);
   add_values(&start2);
   add_values(&start3);
   add_values(&start4);
-  
   check_result();
 }
 

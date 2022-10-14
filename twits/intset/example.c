@@ -7,7 +7,7 @@ int
 main()
 {
   struct intset *s = intset_create();
-
+  //index(s, 5);
   intset_add(s, 7);
   intset_add(s, 4);
 

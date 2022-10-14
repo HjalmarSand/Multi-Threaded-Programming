@@ -87,6 +87,7 @@ msg_store_check_for_updated_message_count(struct msg_store *store,
  * (current topic ID, or one of the TOPIC_STATE constants below).
  */
 int
+//TODO: control
 msg_store_await_message_or_topic(struct msg_store *store,
                                  struct client_state *client);
 

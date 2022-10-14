@@ -5,21 +5,15 @@ import wash.io.WashingIO;
 
 public class WaterController extends ActorThread<WashingMessage> {
 
-    // TODO: add attributes
     WashingIO ourIO;
 
     public WaterController(WashingIO io) {
-        // TODO
         ourIO = io;
     }
 
     @Override
     public void run() {
-        // TODO
-
         try {
-            // ... TODO ...
-
             boolean sent = false;
 
             WashingMessage ourMessage = new WashingMessage(this, WashingMessage.Order.WATER_IDLE);

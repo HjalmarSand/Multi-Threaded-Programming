@@ -14,6 +14,7 @@ struct intset {
   int size;
   int allocated;
   int *data;
+  pthread_mutex_t lock;
 };
 
 // special value indicating a free array element
@@ -31,10 +32,11 @@ intset_create()
     perror("malloc");
     exit(1);
   }
-
   s->size = 0;
   s->allocated = 10;
   s->data = malloc(sizeof(int) * s->allocated);
+  //s->lock = malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(&s->lock, NULL);
   for (int i = 0; i < s->allocated; i++) {
     s->data[i] = EMPTY_SLOT;
   }
@@ -48,7 +50,10 @@ intset_create()
 static int
 index(struct intset *s, int a)
 {
-  return abs(a % s->allocated);
+  //pthread_mutex_lock(s->lock);
+  int b = abs(a % s->allocated);
+  //pthread_mutex_unlock(s->lock);
+  return b;
 }
 
 // ----------------------------------------------------------------------------
@@ -59,6 +64,7 @@ index(struct intset *s, int a)
 static int
 find(struct intset *s, int a)
 {
+  //pthread_mutex_lock(&s->lock);
   int idx = index(s, a);
   for (int i = 0; i < s->allocated; i++) {
     if (s->data[idx] == a || s->data[idx] == EMPTY_SLOT) {
@@ -66,18 +72,18 @@ find(struct intset *s, int a)
     }
     idx = (idx + 1) % s->allocated;
   }
-
   // shouldn't happen: if we got here, it means that the array is completely
   // full, which it should never become (we would rehash before that)
-
+  //pthread_mutex_unlock(&s->lock);
   return -1;
 }
 
 // ----------------------------------------------------------------------------
-
+//TODO
 bool
 intset_add(struct intset *s, int a)
 {
+  pthread_mutex_lock(&s->lock);
   // rehash if more than 70% is used
   if (s->size >= s->allocated * 7 / 10) {
     int old_allocated = s->allocated;
@@ -109,12 +115,13 @@ intset_add(struct intset *s, int a)
 
   int idx = find(s, a);
   if (s->data[idx] == a) {
+    pthread_mutex_unlock(&s->lock);
     return false;
   }
 
   s->data[idx] = a;
   s->size++;
-
+  pthread_mutex_unlock(&s->lock);
   return true;
 }
 
@@ -124,18 +131,21 @@ bool
 intset_contains(struct intset *s, int a)
 {
   // use private helper function above
+  pthread_mutex_lock(&s->lock);
   int idx = find(s, a);
   bool found = (s->data[idx] == a);
-
+   pthread_mutex_unlock(&s->lock);
   return found;
 }
 
 // ----------------------------------------------------------------------------
 
+//TODO
 int
 intset_size(struct intset *s)
 {
+  pthread_mutex_lock(&s->lock);
   int sz = s->size;
-
+  pthread_mutex_unlock(&s->lock);
   return sz;
 }

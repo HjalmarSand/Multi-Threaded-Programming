@@ -8,6 +8,8 @@ import msg.client.Twit;
 import msg.client.test.MessagingLog;
 import msg.client.test.ServerControl;
 
+import java.net.SocketException;
+
 public class ServerTest {
 
     @BeforeEach
@@ -36,5 +38,22 @@ public class ServerTest {
         }
 
         MessagingLog.expect(NBR_TWITS, NBR_TWITS * NBR_MESSAGES);
+    }
+
+    @Test
+    void testOverload() {
+        final int NBR_TWITS     = 100   ;     // number of clients
+        final int NBR_MESSAGES  = 10000;     // number of messages from each client
+        final int MESSAGE_DELAY = 0;   // maximal delay between messages
+
+        try {
+            for (int i = 0; i < NBR_TWITS; i++) {
+                new Twit(NBR_MESSAGES, MESSAGE_DELAY).start();
+            }
+
+            MessagingLog.expect(NBR_TWITS, NBR_TWITS * NBR_MESSAGES);
+        }catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

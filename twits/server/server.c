@@ -8,7 +8,7 @@
 
 #include "connection.h"
 #include "fail.h"
-#include "msg_store.h"
+#include "msg_store.h" //This should be the threadsafe class since it uses list
 #include "server.h"
 
 #define SERVER_PORT   (9000)
